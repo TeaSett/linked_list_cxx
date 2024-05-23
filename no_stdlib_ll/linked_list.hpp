@@ -28,14 +28,14 @@ public:
 
     public:
         iterator(): current{nullptr}, next{nullptr} {}
-        iterator(const iterator& it): current{it.current}, next{it.next} {}
+        iterator(const iterator& it) noexcept : current{it.current}, next{it.next} {}
 
     public:
-        data_t& data() {
+        data_t& data() noexcept {
             return current->data;
         }
 
-        iterator& operator++ () {
+        iterator& operator++ () noexcept {
             if (next == nullptr) {
                 current = nullptr;
                 return *this;
@@ -47,7 +47,7 @@ public:
             return *this;
         }
 
-        iterator operator ++(int) {
+        iterator operator ++(int) noexcept {
             iterator old{*this};
             ++(*this);
             return old;
@@ -68,6 +68,14 @@ private:
     int size;
     iterator front_;
     const iterator back_{};
+
+    void pop_top() noexcept {
+        node_t<data_t> *buf = start;
+        start = buf->next;
+        delete buf;
+        front_ = iterator{start};
+        --size;
+    }
 
 public:
     linked_list(): start{nullptr}, size{0} {}
@@ -110,19 +118,14 @@ public:
         ++size;
     }
 
-    data_t pop() {
+    data_t pop() noexcept(noexcept(data_t::data_t(&))) {
         data_t buf_d = start->data;
-        node_t<data_t> *buf = start;
-        start = buf->next;
-        delete buf;
-        front_ = iterator{start};
-        --size;
-        
+        pop_top();
         return buf_d;
     }
 
-    void clean() {
-        while (size) this->pop();
+    void clean() noexcept {
+        while (size) this->pop_top();
     }
 
     bool is_empty() const noexcept {
