@@ -20,7 +20,7 @@ class linked_list {
         node() = delete;
         node(const node&) = delete;
         node(node&& nd) : next{nd.next}, data{std::move(nd.data)} {}
-        explicit node(data_t data_, const p_node& nd) : next{nd}, data{data_} {}
+        node(data_t data_, const p_node& nd) : next{nd}, data{data_} {}
         ~node() {}
     };
 
